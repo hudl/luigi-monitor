@@ -35,7 +35,13 @@ def failure(task, exception):
         events['Failure'] = [failure]
 
 def success(task):
-    raise NotImplementedError
+    task = str(task)
+    if 'Failure' in events:
+        events['Failure'] = [failure for failure in events['Failure']
+                             if task not in failure]
+    if 'Missing' in events:
+        events['Missing'] = [missing for missing in events['Missing']
+                             if task not in missing]
 
 def processing_time(task, time):
     raise NotImplementedError
@@ -97,7 +103,7 @@ def send_message(slack_url):
     return True
 
 @contextmanager
-def monitor(events=['FAILURE', 'DEPENDENCY_MISSING'], slack_url=None):
+def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None):
     if events:
         h = set_handlers(events)
     yield

@@ -38,7 +38,7 @@ def success(task):
     task = str(task)
     if 'Failure' in events:
         events['Failure'] = [failure for failure in events['Failure']
-                             if task not in failure]
+                             if task not in failure['task']]
     if 'Missing' in events:
         events['Missing'] = [missing for missing in events['Missing']
                              if task not in missing]

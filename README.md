@@ -17,7 +17,7 @@ and sends a summary Slack message when the job is finished.
 
 ### Usage
 
-```
+```python
 import luigi
 from luigi_monitor import monitor
 

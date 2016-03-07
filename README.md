@@ -7,13 +7,13 @@ Send summary messages of your Luigi jobs to Slack.
 ### Overview
 
 [Luigi](https://github.com/spotify/luigi) is a great tool for making
-job pipelines, but it's hard to know the status of a run. Luigi has 
+job pipelines, but it's hard to know the status of a run. Luigi has
 support for error emails, but this requires configuring your machine
 to send email, which is a hassle for short-lived EMR clusters. Further,
 it sends an email for every failure, which can quickly swamp your inbox.
 
 By contrast, this tool gathers all your failures and missing dependencies
-and sends a summary Slack message when the job is finished. 
+and sends a summary Slack message when the job is finished.
 
 ### Usage
 
@@ -24,7 +24,7 @@ from luigi_monitor import monitor
 ...
 
 if __name__ == "__main__":
-    with monitor(slack_url=<your_slack_url>):
+    with monitor(slack_url=<your_slack_url>, max_print=10):
         luigi.run(main_task_cls=MainClass)
 
 ```

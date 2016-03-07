@@ -68,20 +68,20 @@ def set_handlers(events):
         function = event_map[event]['function']
         luigi.Task.event_handler(handler)(function)
 
-def format_message():
+def format_message(max_print):
     job = os.path.basename(inspect.stack()[-1][1])
     text = ["Status report for {}".format(job)]
     if 'Failure' in events:
         text.append("*Failures:*")
-        if len(events['Failure']) > 5:
-            text.append("More than 5 failures. Please check logs.")
+        if len(events['Failure']) > max_print:
+            text.append("More than %d failures. Please check logs." % max_print)
         else:
             for failure in events['Failure']:
                 text.append("Task: {}; Exception: {}".format(failure['task'], failure['exception']))
     if 'Missing' in events:
         text.append("*Tasks with missing dependencies:*")
-        if len(events['Missing']) > 5:
-            text.append("More than 5 tasks with missing dependencies. Please check logs.")
+        if len(events['Missing']) > max_print:
+            text.append("More than %d tasks with missing dependencies. Please check logs." % max_print)
         else:
             for missing in events['Missing']:
                 text.append(missing)
@@ -90,11 +90,11 @@ def format_message():
     text = "\n".join(text)
     return text
 
-def send_message(slack_url):
-    text = format_message()
+def send_message(slack_url, max_print):
+    text = format_message(max_print)
     if not slack_url:
         print "slack_url not provided. Message will not be sent"
-        print text 
+        print text
         return False
     payload = {"text": text}
     r = requests.post(slack_url, data=json.dumps(payload))
@@ -103,8 +103,8 @@ def send_message(slack_url):
     return True
 
 @contextmanager
-def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None):
+def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None, max_print=5):
     if events:
         h = set_handlers(events)
     yield
-    m = send_message(slack_url)
+    m = send_message(slack_url, max_print)

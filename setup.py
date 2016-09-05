@@ -19,5 +19,8 @@ setup(
         "Programming Language :: Python :: 2.7"
     ],
     keywords="luigi",
-    install_requires=["requests", "luigi"]
+    install_requires=["requests", "luigi"],
+    entry_points={
+        "console_scripts": ["luigi-monitor=luigi_monitor.luigi_monitor:run"]
+    }
 )

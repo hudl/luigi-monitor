@@ -74,14 +74,14 @@ def set_handlers(events):
 def format_message(max_print):
     job = os.path.basename(inspect.stack()[-1][1])
     text = ["Status report for {}".format(job)]
-    if 'Failure' in events:
+    if 'Failure' in events and len(events['Failures']) > 0:
         text.append("*Failures:*")
         if len(events['Failure']) > max_print:
             text.append("More than %d failures. Please check logs." % max_print)
         else:
             for failure in events['Failure']:
                 text.append("Task: {}; Exception: {}".format(failure['task'], failure['exception']))
-    if 'Missing' in events:
+    if 'Missing' in events and len(events['Missing']) > 0:
         text.append("*Tasks with missing dependencies:*")
         if len(events['Missing']) > max_print:
             text.append("More than %d tasks with missing dependencies. Please check logs." % max_print)

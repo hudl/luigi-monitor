@@ -1,9 +1,12 @@
-import os
 import inspect
 import json
-import luigi
-import requests
+import os
+import sys
 from contextlib import contextmanager
+
+import luigi
+from luigi.retcodes import run_with_retcodes as run_luigi
+import requests
 
 events = {}
 
@@ -108,3 +111,20 @@ def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None,
         h = set_handlers(events)
     yield
     m = send_message(slack_url, max_print)
+
+def run():
+    """Command line entry point for luigi-monitor"""
+    events = ['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS']
+    slack_url, max_print = parse_config()
+    set_handlers(events)
+    try:
+        run_luigi(sys.argv[1:])
+    except SystemExit:
+        send_message(slack_url, max_print)
+
+def parse_config():
+    """Parse luigi-monitor config"""
+    config = luigi.configuration.get_config()
+    slack_url = config.get('luigi-monitor', 'slack_url', None)
+    max_print = config.get('luigi-monitor', 'max_print', 5)
+    return slack_url, max_print

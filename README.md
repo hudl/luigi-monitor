@@ -29,6 +29,18 @@ if __name__ == "__main__":
 
 ```
 
+Alternatively:
+
+`luigi-monitor --module path.to.module TaskName`
+
+NB: if you plan to use luigi-monitor from the command line, set options using `luigi.cfg`:
+```
+[luigi-monitor]
+slack_url=<slack_hook>
+max_print=<int>
+```
+
+
 This is a work in progress. Particularly, note that:
 
 * It only sends notifications for FAILURE and DEPENDENCY_MISSING

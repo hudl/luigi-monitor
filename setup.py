@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name="luigi-monitor",
-    version="1.0.0",
+    version="1.0.1",
     description="Send summary messages of your Luigi jobs to Slack.",
     url="https://github.com/hudl/luigi-monitor",
     author="Hudl",

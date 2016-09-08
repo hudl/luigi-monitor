@@ -74,7 +74,7 @@ def set_handlers(events):
 def format_message(max_print):
     job = os.path.basename(inspect.stack()[-1][1])
     text = ["Status report for {}".format(job)]
-    if 'Failure' in events and len(events['Failures']) > 0:
+    if 'Failure' in events and len(events['Failure']) > 0:
         text.append("*Failures:*")
         if len(events['Failure']) > max_print:
             text.append("More than %d failures. Please check logs." % max_print)

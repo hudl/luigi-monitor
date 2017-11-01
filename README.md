@@ -17,6 +17,7 @@ and sends a summary Slack message when the job is finished.
 
 ### Usage
 
+With default app username:
 ```python
 import luigi
 from luigi_monitor import monitor
@@ -25,6 +26,19 @@ from luigi_monitor import monitor
 
 if __name__ == "__main__":
     with monitor(slack_url=<your_slack_url>, max_print=10):
+        luigi.run(main_task_cls=MainClass)
+
+```
+
+With dynamic app username:
+```python
+import luigi
+from luigi_monitor import monitor
+
+...
+
+if __name__ == "__main__":
+    with monitor(slack_url=<your_slack_url>, max_print=10, username="FooBar Monitor"):
         luigi.run(main_task_cls=MainClass)
 
 ```
@@ -38,6 +52,7 @@ NB: if you plan to use luigi-monitor from the command line, set options using `l
 [luigi-monitor]
 slack_url=<slack_hook>
 max_print=<int>
+username=<string>
 ```
 
 

@@ -93,38 +93,41 @@ def format_message(max_print):
     text = "\n".join(text)
     return text
 
-def send_message(slack_url, max_print):
+def send_message(slack_url, max_print, username=None):
     text = format_message(max_print)
     if not slack_url:
         print "slack_url not provided. Message will not be sent"
         print text
         return False
     payload = {"text": text}
+    if username:
+        payload['username'] = username
     r = requests.post(slack_url, data=json.dumps(payload))
     if not r.status_code == 200:
         raise Exception(r.text)
     return True
 
 @contextmanager
-def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None, max_print=5):
+def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None, max_print=5, username=None):
     if events:
         h = set_handlers(events)
     yield
-    m = send_message(slack_url, max_print)
+    m = send_message(slack_url, max_print, username)
 
 def run():
     """Command line entry point for luigi-monitor"""
     events = ['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS']
-    slack_url, max_print = parse_config()
+    slack_url, max_print, username = parse_config()
     set_handlers(events)
     try:
         run_luigi(sys.argv[1:])
     except SystemExit:
-        send_message(slack_url, max_print)
+        send_message(slack_url, max_print, username)
 
 def parse_config():
     """Parse luigi-monitor config"""
     config = luigi.configuration.get_config()
     slack_url = config.get('luigi-monitor', 'slack_url', None)
     max_print = config.get('luigi-monitor', 'max_print', 5)
-    return slack_url, max_print
+    username = config.get('luigi-monitor', 'username', None)
+    return slack_url, max_print, username

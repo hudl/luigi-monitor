@@ -1,5 +1,11 @@
 ## Luigi Monitor
 
+[![](https://img.shields.io/pypi/v/luigi-monitor.svg)](https://img.shields.io/pypi/v/luigi-monitor.svg)
+[![](https://img.shields.io/pypi/l/luigi-monitor.svg)](https://img.shields.io/pypi/l/luigi-monitor.svg)
+[![](https://img.shields.io/pypi/pyversions/luigi-monitor.svg)](https://img.shields.io/pypi/pyversions/luigi-monitor.svg)
+[![](https://img.shields.io/pypi/format/luigi-monitor.svg)](https://img.shields.io/pypi/format/luigi-monitor.svg)
+
+
 ![message](https://raw.github.com/hudl/luigi-monitor/master/message.png)
 
 Send summary messages of your Luigi jobs to Slack.
@@ -43,6 +49,25 @@ if __name__ == "__main__":
 
 ```
 
+Monitoring and notifying on various events:
+
+Currently supports: `SUCCESS`, `DEPENDENCY_MISSING`, and `FAILURE` 
+
+By default, all three of the above are monitored and notified on. If, `SUCCESS` event is monitored and 
+all tasks succeed then the notification text is "Job ran successfully" instead of listing _all_ 
+successful tasks. 
+
+```python
+import luigi
+from luigi_monitor import monitor
+
+...
+
+if __name__ == "__main__":
+    with monitor(slack_url=<your_slack_url>, events=['DEPENDENCY_MISSING', 'FAILURE']):
+        luigi.run(main_task_cls=MainClass)
+```
+
 Alternatively:
 
 `luigi-monitor --module path.to.module TaskName`
@@ -58,9 +83,5 @@ username=<string>
 
 This is a work in progress. Particularly, note that:
 
-* It only sends notifications for FAILURE and DEPENDENCY_MISSING
-events.
 * It only sends notifications via Slack
-* If you have more than 5 notifications in a category (FAILURE or
-DEPENDENCY_MISSING), it will notify you of that rather than posting
-a long list of errors.
+* Untested against Python3

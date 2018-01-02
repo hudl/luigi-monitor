@@ -1,24 +1,26 @@
 # All tests pass successfully individually but not as a suite
 import luigi
+from luigi.mock import MockTarget
 from luigi_monitor import monitor
 import unittest
 import os
 import mock
 import requests
 import inspect
+from collections import defaultdict
 
 
 class TestMissingTask(luigi.ExternalTask):
 
     def output(self):
-        return luigi.LocalTarget('dummy.txt')
+        return MockTarget('dummy.txt')
 
 
 class TestSuccessTask(luigi.Task):
     num = luigi.Parameter()
 
     def output(self):
-        return luigi.LocalTarget('words.txt')
+        return MockTarget('words.txt')
 
     def run(self):
         # write a dummy list of words to output file
@@ -52,7 +54,7 @@ class TestLuigiMonitor(unittest.TestCase):
     def test_monitor_missing_message(self, mock_post):
         with monitor(slack_url='mock://slack', events=['DEPENDENCY_MISSING']) as m:
             luigi.run(main_task_cls=TestMissingTask, local_scheduler=True, cmdline_args=[])
-            self.assertDictEqual(m.recorded_events, {'Missing': ['TestMissingTask()']})
+            self.assertDictEqual(m.recorded_events, {'DEPENDENCY_MISSING': ['TestMissingTask()']})
         call_data = mock_post.call_args[1]['data']
         call_url = mock_post.call_args[0][0]
         expected = '{"text": "Status report for ' + os.path.basename(inspect.stack()[-1][1]) + '\\n' \
@@ -63,15 +65,16 @@ class TestLuigiMonitor(unittest.TestCase):
 
     @mock.patch('requests.post', side_effect=mocked_requests_post)
     def test_monitor_success_message(self, mock_post):
+        expected = defaultdict(list)
+        expected['SUCCESS'] = ['TestSuccessTask(num=2)']
+        expected['FAILURE']
+        expected['DEPENDENCY_MISSING']
         with monitor(slack_url='mock://slack') as m:
             luigi.run(main_task_cls=TestSuccessTask, local_scheduler=True, cmdline_args=['--num', '2'])
-            self.assertDictEqual(m.recorded_events, {'Success': ['TestSuccessTask(num=2)']})
+            self.assertDictContainsSubset(expected, m.recorded_events)
+
         call_data = mock_post.call_args[1]['data']
         call_url = mock_post.call_args[0][0]
         expected = '{"text": "Status report for ' + os.path.basename(
             inspect.stack()[-1][1]) + '\\nJob ran successfully!"}'
         self.assertEqual(call_data, expected)
-
-    def tearDown(self):
-        if os.path.isfile('words.txt'):
-            os.remove('words.txt')

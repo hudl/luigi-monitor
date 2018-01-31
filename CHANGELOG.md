@@ -32,3 +32,6 @@
 
 ## v1.1.1
 *  fixed typo for addressing failures in recorded_events dict `Failure` -> `FAILURE`
+
+## v1.1.2
+* set notify_events when running luigi-monitor from commandline

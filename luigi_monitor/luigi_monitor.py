@@ -58,7 +58,7 @@ def start(task):
 def failure(task, exception):
     task = str(task)
     failure = {'task': task, 'exception': str(exception)}
-    m.recorded_events['Failure'].append(failure)
+    m.recorded_events['FAILURE'].append(failure)
 
 
 def success(task):

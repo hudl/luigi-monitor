@@ -29,3 +29,6 @@
 ## v1.1.0
 * Refactor events and notification logic
   * `events` control notification events too allowing exclusion of success notification
+
+## v1.1.1
+*  fixed typo for addressing failures in recorded_events dict `Failure` -> `FAILURE`

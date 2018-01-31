@@ -159,6 +159,7 @@ def run():
     """Command line entry point for luigi-monitor"""
     events = ['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS']
     slack_url, max_print, username = parse_config()
+    m.notify_events = events
     set_handlers(events)
     try:
         run_luigi(sys.argv[1:])

@@ -127,6 +127,9 @@ def format_message(max_print):
     # if job successful add success message
     if m.is_success_only() and 'SUCCESS' in m.notify_events:
         text.append(add_context_to_message("ran successfully", const_success_message))
+        text.append("*Following %d tasks succeeded:*" % len(m.recorded_events['SUCCESS']))
+        for succeeded in m.recorded_events['SUCCESS']:
+            text.append("\t\t" + succeeded)
     formatted_text = "\n".join(text)
     if formatted_text == text[0]:
         return False

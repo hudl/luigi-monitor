@@ -109,15 +109,15 @@ def format_message(max_print):
     host = platform.node()
     text = ["Status report for {} at *{}*".format(job, host)]
     if m.has_failed_tasks() and 'FAILURE' in m.notify_events:
-        text.append(add_context_to_message("failed", const_failed_message))
+        text.append(add_context_to_message("failed", const_failed_message, ":x:"))
         text.append("\t\t*Failures:*")
         if len(m.recorded_events['FAILURE']) > int(max_print):
             text.append("\t\tMore than %d failures. Please check logs." % max_print)
         else:
             for failure in m.recorded_events['FAILURE']:
-                text.append("\t\t\t" + "Task: {}; Exception: {}".format(failure['task'], failure['exception']))
+                text.append("\t\t\tTask: {}; Exception: {}".format(failure['task'], failure['exception']))
     if m.has_missing_tasks() and 'DEPENDENCY_MISSING' in m.notify_events:
-        text.append(add_context_to_message("could not be completed", const_missing_message))
+        text.append(add_context_to_message("could not be completed", const_missing_message, ":x:"))
         text.append("\t\t*Tasks with missing dependencies:*")
         if len(m.recorded_events['DEPENDENCY_MISSING']) > int(max_print):
             text.append("\t\t\tMore than %d tasks with missing dependencies. Please check logs." % max_print)
@@ -126,7 +126,7 @@ def format_message(max_print):
                 text.append("\t\t\t" + missing)
     # if job successful add success message
     if m.is_success_only() and 'SUCCESS' in m.notify_events:
-        text.append(add_context_to_message("ran successfully", const_success_message))
+        text.append(add_context_to_message("ran successfully", const_success_message, ":white_check_mark:"))
         text.append("\t\t*Following %d tasks succeeded:*" % len(m.recorded_events['SUCCESS']))
         for succeeded in m.recorded_events['SUCCESS']:
             text.append("\t\t\t" + succeeded)
@@ -136,11 +136,11 @@ def format_message(max_print):
     return formatted_text
 
 
-def add_context_to_message(result, appendix):
+def add_context_to_message(result, appendix, emoji):
     if m.root_task is None:
         return appendix
     else:
-        message = ["\tTask *" + m.root_task + "* "]
+        message = ["\t" + emoji + " Task *" + m.root_task + "* "]
         if m.core_module is not None:
             message.append("from module *" + m.core_module + "* ")
         message.append(result)

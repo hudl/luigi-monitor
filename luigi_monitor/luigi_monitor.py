@@ -107,29 +107,29 @@ def set_handlers(events):
 def format_message(max_print):
     job = os.path.basename(inspect.stack()[-1][1])
     host = platform.node()
-    text = ["Status report for {} at {}".format(job, host)]
+    text = ["Status report for {} at *{}*".format(job, host)]
     if m.has_failed_tasks() and 'FAILURE' in m.notify_events:
         text.append(add_context_to_message("failed", const_failed_message))
-        text.append("*Failures:*")
+        text.append("\t\t*Failures:*")
         if len(m.recorded_events['FAILURE']) > int(max_print):
-            text.append("More than %d failures. Please check logs." % max_print)
+            text.append("\t\tMore than %d failures. Please check logs." % max_print)
         else:
             for failure in m.recorded_events['FAILURE']:
-                text.append("Task: {}; Exception: {}".format(failure['task'], failure['exception']))
+                text.append("\t\t\t" + "Task: {}; Exception: {}".format(failure['task'], failure['exception']))
     if m.has_missing_tasks() and 'DEPENDENCY_MISSING' in m.notify_events:
         text.append(add_context_to_message("could not be completed", const_missing_message))
-        text.append("*Tasks with missing dependencies:*")
+        text.append("\t\t*Tasks with missing dependencies:*")
         if len(m.recorded_events['DEPENDENCY_MISSING']) > int(max_print):
-            text.append("More than %d tasks with missing dependencies. Please check logs." % max_print)
+            text.append("\t\t\tMore than %d tasks with missing dependencies. Please check logs." % max_print)
         else:
             for missing in m.recorded_events['DEPENDENCY_MISSING']:
-                text.append(missing)
+                text.append("\t\t\t" + missing)
     # if job successful add success message
     if m.is_success_only() and 'SUCCESS' in m.notify_events:
         text.append(add_context_to_message("ran successfully", const_success_message))
-        text.append("*Following %d tasks succeeded:*" % len(m.recorded_events['SUCCESS']))
+        text.append("\t\t*Following %d tasks succeeded:*" % len(m.recorded_events['SUCCESS']))
         for succeeded in m.recorded_events['SUCCESS']:
-            text.append("\t\t" + succeeded)
+            text.append("\t\t\t" + succeeded)
     formatted_text = "\n".join(text)
     if formatted_text == text[0]:
         return False
@@ -140,7 +140,7 @@ def add_context_to_message(result, appendix):
     if m.root_task is None:
         return appendix
     else:
-        message = ["Task *" + m.root_task + "* "]
+        message = ["\tTask *" + m.root_task + "* "]
         if m.core_module is not None:
             message.append("from module *" + m.core_module + "* ")
         message.append(result)
@@ -148,7 +148,7 @@ def add_context_to_message(result, appendix):
             message.append(" with parameters:")
             for string in m.root_task_parameters:
                 if string.startswith("--"):
-                    message.append("\n\t\t" + string)
+                    message.append("\n\t\t\t" + string)
                 else:
                     message.append(" " + string)
         else:

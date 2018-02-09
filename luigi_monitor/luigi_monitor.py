@@ -127,7 +127,7 @@ def format_message(max_print):
                 text.append("\t\t\t\t" + missing)
     # if job successful add success message
     if m.is_success_only() and 'SUCCESS' in m.notify_events:
-        emoji = ":white_check_mark:"
+        emoji = ":heavy_check_mark:"
         text.append(add_context_to_message("ran successfully", const_success_message))
         text.append("\t\t\t*Following %d tasks succeeded:*" % len(m.recorded_events['SUCCESS']))
         for succeeded in m.recorded_events['SUCCESS']:

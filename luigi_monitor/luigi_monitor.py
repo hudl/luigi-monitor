@@ -104,9 +104,11 @@ def set_handlers(events):
         luigi.Task.event_handler(handler)(function)
 
 
-def format_message(max_print):
+def format_message(max_print, host):
     job = os.path.basename(inspect.stack()[-1][1])
-    host = platform.node()
+
+    if host is None:
+        host = platform.node()
     text = []
     emoji = ":x:"
     if m.has_failed_tasks() and 'FAILURE' in m.notify_events:
@@ -135,7 +137,7 @@ def format_message(max_print):
     fulltext = [emoji + " Status report for {} at *{}*:".format(job, host)]
     fulltext.extend(text)
     formatted_text = "\n".join(fulltext)
-    if formatted_text == text[0]:
+    if formatted_text == fulltext[0]:
         return False
     return formatted_text
 
@@ -160,8 +162,8 @@ def add_context_to_message(result, appendix):
         return ''.join(message)
 
 
-def send_message(slack_url, max_print, username=None):
-    text = format_message(max_print)
+def send_message(slack_url, max_print, username=None, host=None):
+    text = format_message(max_print, host)
     if not slack_url and text:
         print("slack_url not provided. Message will not be sent")
         print(text)
@@ -180,12 +182,12 @@ m = Monitor()
 
 
 @contextmanager
-def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None, max_print=5, username=None):
+def monitor(events=['FAILURE', 'DEPENDENCY_MISSING', 'SUCCESS'], slack_url=None, max_print=5, username=None, host=None):
     if events:
         m.notify_events = events
         set_handlers(events)
     yield m
-    send_message(slack_url, max_print, username)
+    send_message(slack_url, max_print, username, host)
 
 
 def run():

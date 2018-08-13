@@ -35,3 +35,6 @@
 
 ## v1.1.2
 * set notify_events when running luigi-monitor from commandline
+
+## v1.1.3
+* enhanced message formatting (incl. emojis for task result states)

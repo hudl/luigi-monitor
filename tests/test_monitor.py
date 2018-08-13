@@ -45,36 +45,42 @@ def mocked_requests_post(*args, **kwargs):
 class TestLuigiMonitor(unittest.TestCase):
     @mock.patch('requests.post', side_effect=mocked_requests_post)
     def test_monitor_no_message(self, mock_post):
-        with monitor(slack_url='mock://slack', events=['DEPENDENCY_MISSING']) as m:
+        with monitor(slack_url='mock://slack', events=['DEPENDENCY_MISSING'], host='testhostname') as m:
             luigi.run(main_task_cls=TestSuccessTask, local_scheduler=True, cmdline_args=['--num', '1'])
             self.assertDictEqual(m.recorded_events, {})
         self.assertEqual(mock_post.call_count, 0, 'Slack webhook called')
 
     @mock.patch('requests.post', side_effect=mocked_requests_post)
     def test_monitor_missing_message(self, mock_post):
-        with monitor(slack_url='mock://slack', events=['DEPENDENCY_MISSING']) as m:
+        with monitor(slack_url='mock://slack', events=['DEPENDENCY_MISSING'], host='testhostname') as m:
             luigi.run(main_task_cls=TestMissingTask, local_scheduler=True, cmdline_args=[])
             self.assertDictEqual(m.recorded_events, {'DEPENDENCY_MISSING': ['TestMissingTask()']})
         call_data = mock_post.call_args[1]['data']
         call_url = mock_post.call_args[0][0]
-        expected = '{"text": "Status report for ' + os.path.basename(inspect.stack()[-1][1]) + '\\n' \
-                                                                                               '*Tasks with missing dependencies:*' \
-                                                                                               '\\n' \
-                                                                                               'TestMissingTask()"}'
+        expected = '{"text": ":x: Status report for ' + os.path.basename(
+            inspect.stack()[-1][1]) + ' at *testhostname*:\\n' \
+                                      'Task could not be completed!' \
+                                      '\\n' \
+                                      '\\t\\t\\t*Tasks with missing dependencies:*' \
+                                      '\\n' \
+                                      '\\t\\t\\t\\tTestMissingTask()"}'
         self.assertEqual(call_data, expected)
 
     @mock.patch('requests.post', side_effect=mocked_requests_post)
     def test_monitor_success_message(self, mock_post):
         expected = defaultdict(list)
         expected['SUCCESS'] = ['TestSuccessTask(num=2)']
-        expected['FAILURE']
-        expected['DEPENDENCY_MISSING']
-        with monitor(slack_url='mock://slack') as m:
+        expected['FAILURE'] = []
+        expected['DEPENDENCY_MISSING'] = []
+        with monitor(slack_url='mock://slack', host='testhostname') as m:
             luigi.run(main_task_cls=TestSuccessTask, local_scheduler=True, cmdline_args=['--num', '2'])
             self.assertDictContainsSubset(expected, m.recorded_events)
 
         call_data = mock_post.call_args[1]['data']
         call_url = mock_post.call_args[0][0]
-        expected = '{"text": "Status report for ' + os.path.basename(
-            inspect.stack()[-1][1]) + '\\nJob ran successfully!"}'
+        expected = '{"text": ":heavy_check_mark: Status report for ' + os.path.basename(
+            inspect.stack()[-1][1]) + ' at *testhostname*:\\nTask ran successfully!\\n' \
+                                      '\\t\\t\\t*Following 1 tasks succeeded:*' \
+                                      '\\n' \
+                                      '\\t\\t\\t\\tTestSuccessTask(num=2)"}'
         self.assertEqual(call_data, expected)

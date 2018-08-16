@@ -85,4 +85,4 @@ username=<string>
 This is a work in progress. Particularly, note that:
 
 * It only sends notifications via Slack
-* Untested against Python3
+

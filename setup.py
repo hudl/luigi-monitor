@@ -5,7 +5,7 @@ except ImportError:
 
 setup(
     name="luigi-monitor",
-    version="1.1.3",
+    version="1.1.4",
     description="Send summary messages of your Luigi jobs to Slack.",
     long_description=open("README.md").read(),
     url="https://github.com/hudl/luigi-monitor",
@@ -17,7 +17,9 @@ setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
-        "Programming Language :: Python :: 2.7"
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7"
     ],
     keywords="luigi",
     install_requires=["requests", "luigi"],

@@ -38,3 +38,7 @@
 
 ## v1.1.3
 * enhanced message formatting (incl. emojis for task result states)
+
+## v1.1.4
+* Add tests for Python 3.6 and 3.7
+

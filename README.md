@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/pypi/l/luigi-monitor.svg)](https://img.shields.io/pypi/l/luigi-monitor.svg)
 [![Python Versions](https://img.shields.io/pypi/pyversions/luigi-monitor.svg)](https://img.shields.io/pypi/pyversions/luigi-monitor.svg)
 [![Pypi Format](https://img.shields.io/pypi/format/luigi-monitor.svg)](https://img.shields.io/pypi/format/luigi-monitor.svg)
-[![Build Status](https://travis-ci.org/hudl/luigi-monitor.svg?branch=master)](https://travis-ci.org/hudl/luigi-monitor)
+[![Build Status](https://travis-ci.com/hudl/luigi-monitor.svg?branch=master)](https://travis-ci.com/hudl/luigi-monitor)
 
 
 ![message](https://raw.github.com/hudl/luigi-monitor/master/message.png)
